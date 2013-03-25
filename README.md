@@ -1,4 +1,8 @@
-freeswitch_mod_cdr_sql
-======================
+About
+=====
 
-A freeswitch module for uploading cdr entries to sql.
+A freeswitch module for uploading cdr entries directly to MySQL.
+
+Requirements
+============
+Following libraries are required for this to work.
