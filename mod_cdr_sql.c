@@ -395,20 +395,25 @@ static switch_state_handler_table_t state_handlers = {
 };
 
 static void init_mysql(){
-        static char *dbsock = NULL;
-        switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "%s:%s:%s:%s", globals.db_host, globals.db_username, globals.db_password, globals.db_database);
-	if ((globals.db_connection = mysql_init(NULL)) == NULL)
-	{
+    
+    static char *dbsock = NULL;
+    static my_bool reconnect = 1;
+   	
+   	switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "Initializing database connection");
+
+	if ((globals.db_connection = mysql_init(NULL)) == NULL){
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_CRIT, "mysql_init() failed.\n");
 		return;
 	}
        
 	if (!globals.db_online || mysql_ping(globals.db_connection) != 0) {
+		//Setting connection options
+		mysql_options(globals.db_connection, MYSQL_OPT_RECONNECT, &reconnect);
 		mysql_real_connect(globals.db_connection,globals.db_host,globals.db_username,globals.db_password,globals.db_database,globals.db_port,dbsock,0);
 	}
 
 	if (mysql_ping(globals.db_connection) == 0) {
-		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_CRIT, "Connected to database.");
+		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "Connected to database.");
 		globals.db_online = 1;
 	} else {
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_CRIT, "Connection to database failed: %s", mysql_error(globals.db_connection));
@@ -431,6 +436,9 @@ static switch_status_t load_config(switch_memory_pool_t *pool)
 		//switch_mutex_destroy(globals.db_mutex);
 		//globals.db_online = 0;
 	}
+
+	//Checking if db connection is alive or not
+
 
 	memset(&globals, 0, sizeof(globals));
 	switch_core_hash_init(&globals.fd_hash, pool);
