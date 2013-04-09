@@ -241,6 +241,8 @@ static switch_status_t insert_cdr(const char *values)
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_CRIT, "INSERT command failed: %s", mysql_error(globals.db_connection));
 		//mysql_close(globals.db_connection);
 		goto error;
+	}else{
+		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "Successfully inserted CDR data.");
 	}
 	switch_mutex_unlock(globals.db_mutex);
 	//mysql_close(globals.db_connection);
