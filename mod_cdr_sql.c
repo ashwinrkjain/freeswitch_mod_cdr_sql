@@ -322,7 +322,6 @@ static switch_status_t my_on_reporting(switch_core_session_t *session)
 			/* Allocate sufficient buffer for PQescapeString */
 			len = strlen(var);
 			tmp = switch_core_session_alloc(session, len * 2 + 1);
-			switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "var:\n%s\n", var);
 			mysql_real_escape_string(globals.db_connection, tmp, var, len);
 			var = tmp;
 		}
